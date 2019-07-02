@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import mongoose from 'mongoose';
 
 import databaseConfig from '../config/database';
 
@@ -13,12 +14,30 @@ class Database {
     this.init();
   }
 
+  /**
+   * Should refactor functions and connections names to match each database?
+   *
+   * Postgres:
+   * - postgres()
+   * - this.postgresConnection
+   *
+   * Mongo:
+   * - mongo()
+   * - this.mongoConnection
+   */
   init() {
     this.connection = new Sequelize(databaseConfig);
 
     models
       .map(model => model.init(this.connection))
       .map(model => model.associate && model.associate(this.connection.models));
+  }
+
+  mongo() {
+    this.mongoConnection = mongoose.connect(
+      'mongodb://localhost:27017/gobarber',
+      { useNewUrlParser: true, useFindAndModify: true }
+    );
   }
 }
 
